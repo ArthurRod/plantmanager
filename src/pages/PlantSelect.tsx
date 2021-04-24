@@ -2,13 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { 
     Text,
     View,
-    StyleSheet,
     FlatList,
-    ActivityIndicator
+    ActivityIndicator,
+    StyleSheet
 } from 'react-native';
-import { EnviromentButton } from '../components/EnviromentButton';
 import { useNavigation } from '@react-navigation/core'
 
+import { EnviromentButton } from '../components/EnviromentButton';
 import { PlantProps } from '../libs/storage';
 import { Header } from '../components/Header';
 import { PlantCardPrimary } from '../components/PlantCardPrimary';
@@ -35,7 +35,7 @@ export function PlantSelect(){
     function handleEnviromentSelected(environment: string){
         setEnviromentSelected(environment);
 
-        if(environment =='all')
+        if(environment === 'all')
             return setFilteredPlants(plants);
         
         const filtered = plants.filter(plant => 
@@ -91,8 +91,7 @@ export function PlantSelect(){
         fetchPlants();
     },[])
 
-    if(loading)
-        return<Load />
+    if(loading) return<Load />
     return(
         <View style={styles.container}>
             <View style={styles.header}>
@@ -107,7 +106,7 @@ export function PlantSelect(){
             <View>
                 <FlatList 
                     data={enviroments}
-                    keyExtractor={(item) => item.key}
+                    keyExtractor={(item) => String(item.key)}
                     renderItem={({item}) => (
                         <EnviromentButton
                             title={item.title}
@@ -118,32 +117,35 @@ export function PlantSelect(){
                     horizontal
                     showsHorizontalScrollIndicator={false}
                     contentContainerStyle={styles.enviromentList}
+                    ListHeaderComponent={<View />}
+                    ListHeaderComponentStyle={{ marginRight: 32 }}
                 />
             </View>
+
             <View style={styles.plants}>
                 <FlatList 
-                data={filteredPlants}
-                keyExtractor={(item) => String(item.id)}
-                renderItem={({item}) => (
-                    <PlantCardPrimary 
-                        data={item} 
-                        onPress={() => handlePlantSelect(item)}
-                    />    
-                )}
-                showsVerticalScrollIndicator={false}
-                numColumns={2} 
-                onEndReachedThreshold={0.1}
-                onEndReached={({distanceFromEnd}) =>
-                    handleFetchMore(distanceFromEnd)
-                }
-                ListFooterComponent={
-                    loadingMore
-                    ? <ActivityIndicator color={colors.green_dark} />
-                    : <></>
-                }
+                    data={filteredPlants}
+                    keyExtractor={(item) => String(item.id)}
+                    renderItem={({item}) => (
+                        <PlantCardPrimary 
+                            data={item} 
+                            onPress={() => handlePlantSelect(item)}
+                        />    
+                    )}
+                    showsVerticalScrollIndicator={false}
+                    numColumns={2} 
+                    onEndReachedThreshold={0.1}
+                    onEndReached={({distanceFromEnd}) =>
+                        handleFetchMore(distanceFromEnd)
+                    }
+                    ListFooterComponent={
+                        loadingMore
+                        ? <ActivityIndicator color={colors.green} />
+                        : <></>
+                    }
                 />
             </View>
-        </View>  
+        </View> 
     )
 }
 
@@ -172,7 +174,6 @@ const styles = StyleSheet.create({
         height: 40,
         justifyContent: 'center',
         paddingBottom: 5,
-        marginLeft: 32,
         marginVertical: 32
     },
     plants: {
